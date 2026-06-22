@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buda · Siddhartha Gautama</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #b8860b;
+    --gold-mid: #d4a017;
+    --gold-light: #f5d060;
+    --gold-pale: #fef3c7;
+  }
+
+  body {
+    background: radial-gradient(ellipse at 50% 0%, #8a6200 0%, #5c3d00 35%, #3a2400 70%, #1e1400 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: 'EB Garamond', Georgia, serif;
+    overflow-x: hidden;
+    color: var(--gold-pale);
+  }
+
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,210,80,0.75) 0%, transparent 70%);
+    animation: float linear infinite;
+    opacity: 0;
+  }
+  @keyframes float {
+    0%   { transform: translateY(100vh) scale(0.3); opacity: 0; }
+    10%  { opacity: 0.5; }
+    90%  { opacity: 0.25; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 44px 20px 10px;
+  }
+  header .om {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(12px, 1.8vw, 16px);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    opacity: 0.85;
+    margin-bottom: 7px;
+  }
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(20px, 3.8vw, 38px);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--gold-pale);
+    text-shadow: 0 0 50px rgba(255,210,80,0.5), 0 2px 4px rgba(0,0,0,0.5);
+  }
+
+  .buddha-wrap {
+    position: relative;
+    z-index: 2;
+    margin: 30px auto 0;
+    width: min(320px, 78vw);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .buddha-wrap img {
+    width: 100%;
+    display: block;
+    border-radius: 6px;
+    filter: drop-shadow(0 6px 50px rgba(180,120,0,0.4));
+    transition: filter 0.4s ease;
+  }
+
+  .halo {
+    position: absolute;
+    inset: -24px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center,
+      rgba(255,200,50,0.12) 30%,
+      rgba(212,160,23,0.06) 60%,
+      transparent 80%
+    );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .light-burst {
+    position: absolute;
+    inset: -70px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,220,80,0.65) 0%, rgba(212,160,23,0.3) 35%, transparent 70%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .light-burst.active {
+    animation: burst 2s ease-out forwards;
+  }
+  @keyframes burst {
+    0%  { opacity: 0; transform: scale(0.4); }
+    18% { opacity: 1; transform: scale(1.05); }
+    60% { opacity: 0.4; }
+    100%{ opacity: 0; transform: scale(1.7); }
+  }
+
+  .rays {
+    position: absolute;
+    inset: -90px;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 2;
+  }
+  .rays.active {
+    animation: rays-fade 2s ease-out forwards;
+  }
+  @keyframes rays-fade {
+    0%  { opacity: 0; transform: scale(0.6); }
+    20% { opacity: 0.7; transform: scale(1.0); }
+    100%{ opacity: 0; transform: scale(1.35); }
+  }
+  .rays svg { width: 100%; height: 100%; }
+
+  .quote-globe {
+    position: relative;
+    z-index: 2;
+    margin: 26px auto 0;
+    width: min(480px, 92vw);
+    text-align: center;
+  }
+
+  .globe-type {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.55;
+    color: var(--gold-light);
+    transition: opacity 0.4s;
+  }
+  .globe-type.fade { opacity: 0; }
+
+  .globe-inner {
+    background: linear-gradient(160deg, rgba(90,55,0,0.92) 0%, rgba(40,24,0,0.97) 100%);
+    border: 1px solid rgba(212,160,23,0.4);
+    border-radius: 18px;
+    padding: 26px 30px 30px;
+    box-shadow:
+      0 0 30px rgba(180,120,0,0.15),
+      inset 0 1px 0 rgba(255,210,80,0.15);
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+  }
+
+  .globe-inner.lit {
+    box-shadow:
+      0 0 70px rgba(212,160,23,0.5),
+      0 0 130px rgba(212,160,23,0.2),
+      inset 0 1px 0 rgba(255,210,80,0.35);
+    border-color: rgba(255,210,80,0.7);
+  }
+
+  .quote-text {
+    font-style: italic;
+    font-size: clamp(14px, 2.4vw, 17px);
+    line-height: 1.7;
+    color: var(--gold-pale);
+    transition: opacity 0.5s ease;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  }
+
+  .quote-source {
+    margin-top: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(10px, 1.3vw, 12px);
+    letter-spacing: 0.2em;
+    color: var(--gold-light);
+    opacity: 0.75;
+    transition: opacity 0.5s ease;
+  }
+
+  .quote-text.fade, .quote-source.fade { opacity: 0; }
+
+  .timer-bar-wrap {
+    position: relative;
+    z-index: 2;
+    width: min(320px, 70vw);
+    margin: 14px auto 0;
+    height: 2px;
+    background: rgba(212,160,23,0.18);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .timer-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+    width: 0%;
+  }
+
+  .sound-hint {
+    position: relative;
+    z-index: 2;
+    margin-top: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold-light);
+    opacity: 0.4;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  footer {
+    position: relative;
+    z-index: 2;
+    padding: 32px 20px 28px;
+    text-align: center;
+  }
+  footer a {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    color: var(--gold-light);
+    opacity: 0.5;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: opacity 0.3s;
+    border-bottom: 1px solid rgba(212,160,23,0.25);
+    padding-bottom: 2px;
+  }
+  footer a:hover { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .particle, .light-burst, .rays { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<header>
+  <div class="om">☸ Om Mani Padme Hum ☸</div>
+  <h1>Siddhartha Gautama</h1>
+</header>
+
+<div class="buddha-wrap" id="buddhaWrap">
+  <div class="halo"></div>
+  <div class="rays" id="rays">
+    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(250,250)">
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.55)" stroke-width="20"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.45)" stroke-width="15" transform="rotate(30)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.55)" stroke-width="20" transform="rotate(60)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.45)" stroke-width="15" transform="rotate(90)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.55)" stroke-width="20" transform="rotate(120)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.45)" stroke-width="15" transform="rotate(150)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.55)" stroke-width="20" transform="rotate(180)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.45)" stroke-width="15" transform="rotate(210)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.55)" stroke-width="20" transform="rotate(240)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.45)" stroke-width="15" transform="rotate(270)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.55)" stroke-width="20" transform="rotate(300)"/>
+        <line x1="0" y1="-200" x2="0" y2="-235" stroke="rgba(255,210,80,0.45)" stroke-width="15" transform="rotate(330)"/>
+      </g>
+    </svg>
+  </div>
+  <div class="light-burst" id="lightBurst"></div>
+  <img src="bu2.jpg" alt="Buda Siddhartha Gautama" id="buddhaImg" draggable="false">
+</div>
+
+<p class="sound-hint">Toca la imagen para Om Mani Padme Hum ✦</p>
+
+<div class="quote-globe">
+  <div class="globe-type" id="globeType"></div>
+  <div class="globe-inner" id="globeInner">
+    <div class="quote-text" id="quoteText"></div>
+    <div class="quote-source" id="quoteSource"></div>
+  </div>
+</div>
+
+<div class="timer-bar-wrap">
+  <div class="timer-bar" id="timerBar"></div>
+</div>
+
+<footer>
+  <a href="https://easypagex.github.io/lpus/" target="_blank" rel="noopener">✦ EasyPageX — Páginas que Convierten ✦</a>
+</footer>
+
+<script>
+const quotes = [
+  {
+    label: "☸ El Buda",
+    text: "Nuestra vida está moldeada por nuestra mente; nos convertimos en lo que pensamos. La alegría sigue a un pensamiento puro como una sombra que nunca se va.",
+    source: "Dhammapada · Versos 1–2"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Tienes 3 segundos para capturar la atención de un visitante antes de que se vaya. Haz que cada píxel cuente.",
+    source: "EasyPageX · Estadísticas Que Importan"
+  },
+  {
+    label: "☸ El Buda",
+    text: "El odio nunca cesa mediante el odio. El odio cesa mediante el amor. Esta es una verdad eterna.",
+    source: "Dhammapada · Verso 5"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "El 80% de los negocios sin una landing page pierden clientes potenciales cada día. Cada día sin la tuya es un cliente que le regalas a tu competencia.",
+    source: "EasyPageX · Números Que Necesitas Saber"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Tu peor enemigo no puede hacerte tanto daño como tus propios pensamientos sin vigilancia.",
+    source: "Dhammapada · Verso 42"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "El cerebro decide en 50 milisegundos. Antes de leer una sola palabra, tu visitante ya se ha formado una opinión visual. El diseño no es decoración — es psicología.",
+    source: "EasyPageX · Verdades Sorprendentes"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Nadie nos salva excepto nosotros mismos. Nadie puede ni nadie debe. Nosotros mismos debemos caminar el sendero.",
+    source: "Dhammapada · Verso 165"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Las páginas con múltiples llamadas a la acción convierten un 266% menos que las que tienen un objetivo único y claro. La simplicidad vende.",
+    source: "EasyPageX · Una Landing, Un Objetivo"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Es mejor conquistarse a uno mismo que ganar mil batallas. Entonces la victoria es tuya. Nadie puede arrebatártela.",
+    source: "Dhammapada · Verso 103"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Una landing page dedicada convierte 5 veces más que una página de inicio genérica. Estrategia, no solo estética.",
+    source: "EasyPageX · Construida para Resultados"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Vence al colérico sin enojarte; vence al malvado con bondad; vence al tacaño con generosidad, y al mentiroso diciendo la verdad.",
+    source: "Dhammapada · Verso 223"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Mejorar los textos puede aumentar las conversiones hasta un 300%. En EasyPageX cuidamos cada palabra, no solo los visuales.",
+    source: "EasyPageX · El Copy Importa Más Que el Diseño"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Así como una roca sólida no se agita por la tormenta, el sabio tampoco se ve afectado por el elogio ni por la crítica.",
+    source: "Dhammapada · Verso 81"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Más del 70% del tráfico llega desde móvil. Tu página debe verse perfecta en cada dispositivo, cada tamaño de pantalla, siempre.",
+    source: "EasyPageX · Mobile-First Siempre"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Gota a gota se llena el cántaro. Del mismo modo, el sabio, reuniendo poco a poco, se llena de bien.",
+    source: "Dhammapada · Verso 122"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "La urgencia dispara las ventas. Las landing pages con elementos de escasez o tiempo limitado generan hasta un 148% más de clics. Es ciencia del comportamiento en acción.",
+    source: "EasyPageX · Verdades Sorprendentes"
+  },
+  {
+    label: "☸ El Buda",
+    text: "Todo el esfuerzo debe ser hecho por ti solo. Los Budas solo señalan el camino.",
+    source: "Dhammapada · Verso 276"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Cuéntanos tu visión. Diseñamos tu página. Tú revisas y apruebas. Luego lanzas y creces — desde el primer día.",
+    source: "EasyPageX · Tan Fácil Que te Sorprenderá"
+  },
+  {
+    label: "☸ El Buda",
+    text: "La mente lo es todo. En lo que piensas, te conviertes.",
+    source: "Siddhartha Gautama"
+  },
+  {
+    label: "✦ Sabiduría EasyPageX",
+    text: "Los testimonios, logotipos de clientes y sellos de confianza pueden aumentar la tasa de conversión hasta un 34%. La confianza se construye visualmente.",
+    source: "EasyPageX · La Confianza se Construye Visualmente"
+  },
+];
+
+const INTERVAL = 8000;
+let current = 0;
+
+const quoteText  = document.getElementById('quoteText');
+const quoteSource= document.getElementById('quoteSource');
+const globeInner = document.getElementById('globeInner');
+const globeType  = document.getElementById('globeType');
+const timerBar   = document.getElementById('timerBar');
+
+function triggerGlow() {
+  globeInner.classList.remove('lit');
+  void globeInner.offsetWidth;
+  globeInner.classList.add('lit');
+  setTimeout(() => globeInner.classList.remove('lit'), 2000);
+}
+
+function showQuote(idx, withGlow) {
+  const q = quotes[idx];
+  quoteText.classList.add('fade');
+  quoteSource.classList.add('fade');
+  globeType.classList.add('fade');
+  setTimeout(() => {
+    quoteText.textContent   = '\u201c' + q.text + '\u201d';
+    quoteSource.textContent = '\u2014 ' + q.source;
+    globeType.textContent   = q.label;
+    quoteText.classList.remove('fade');
+    quoteSource.classList.remove('fade');
+    globeType.classList.remove('fade');
+  }, 500);
+  if (withGlow) triggerGlow();
+}
+
+// Init
+quoteText.textContent   = '\u201c' + quotes[0].text + '\u201d';
+quoteSource.textContent = '\u2014 ' + quotes[0].source;
+globeType.textContent   = quotes[0].label;
+triggerGlow();
+
+let timerStart = Date.now();
+function animateBar() {
+  const pct = Math.min(((Date.now() - timerStart) / INTERVAL) * 100, 100);
+  timerBar.style.width = pct + '%';
+  if (pct < 100) requestAnimationFrame(animateBar);
+}
+requestAnimationFrame(animateBar);
+
+setInterval(() => {
+  current = (current + 1) % quotes.length;
+  showQuote(current, true);
+  timerStart = Date.now();
+  requestAnimationFrame(animateBar);
+}, INTERVAL);
+
+// Light effect
+const lightBurst = document.getElementById('lightBurst');
+const rays       = document.getElementById('rays');
+const buddhaImg  = document.getElementById('buddhaImg');
+
+function triggerLight() {
+  lightBurst.classList.remove('active');
+  rays.classList.remove('active');
+  buddhaImg.style.filter = 'drop-shadow(0 0 70px rgba(255,210,80,0.95)) brightness(1.18)';
+  void lightBurst.offsetWidth;
+  lightBurst.classList.add('active');
+  rays.classList.add('active');
+  setTimeout(() => {
+    buddhaImg.style.filter = 'drop-shadow(0 6px 50px rgba(180,120,0,0.4))';
+  }, 1800);
+}
+
+setInterval(triggerLight, INTERVAL);
+triggerLight();
+
+document.getElementById('buddhaWrap').addEventListener('click', () => {
+  playOm();
+  triggerLight();
+  showQuote(current, true);
+});
+
+// Web Audio
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playOm() {
+  const ctx = getAudio();
+  const now = ctx.currentTime;
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0, now);
+  master.gain.linearRampToValueAtTime(0.2, now + 0.5);
+  master.gain.setValueAtTime(0.2, now + 2.4);
+  master.gain.linearRampToValueAtTime(0, now + 4);
+  master.connect(ctx.destination);
+
+  [[110,1],[220,0.5],[330,0.25],[440,0.14],[550,0.07]].forEach(([freq, gain]) => {
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    const lfo = ctx.createOscillator();
+    const lg  = ctx.createGain();
+    lfo.frequency.value = 4.5;
+    lg.gain.value = freq * 0.003;
+    lfo.connect(lg); lg.connect(osc.frequency);
+    lfo.start(now); lfo.stop(now + 4.2);
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.value = gain;
+    osc.connect(g); g.connect(master);
+    osc.start(now); osc.stop(now + 4.2);
+  });
+
+  const bell = ctx.createOscillator();
+  const bellG = ctx.createGain();
+  bell.type = 'sine';
+  bell.frequency.value = 528;
+  bellG.gain.setValueAtTime(0.45, now);
+  bellG.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+  bell.connect(bellG); bellG.connect(ctx.destination);
+  bell.start(now); bell.stop(now + 2.9);
+
+  const delay = ctx.createDelay(0.5);
+  const dg    = ctx.createGain();
+  delay.delayTime.value = 0.38;
+  dg.gain.value = 0.25;
+  master.connect(delay); delay.connect(dg);
+  dg.connect(delay); dg.connect(ctx.destination);
+}
+
+// Particles
+const pEl = document.getElementById('particles');
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const s = 2 + Math.random() * 5;
+  p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;animation-duration:${9+Math.random()*14}s;animation-delay:${Math.random()*10}s;`;
+  pEl.appendChild(p);
+}
+</script>
+</body>
+</html>
